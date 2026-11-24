@@ -1,0 +1,10 @@
+This package calls the operating system PC/SC implementation through node-ctypes.
+It does not distribute winscard.dll, PCSC.framework, pcsc-lite or card drivers.
+
+Native API/ABI references:
+https://learn.microsoft.com/en-us/windows/win32/api/winscard/
+https://pcsclite.apdu.fr/api/
+https://github.com/LudovicRousseau/PCSC/tree/master/src/PCSC
+https://github.com/apple-oss-distributions/SmartCardServices/tree/main/src/PCSC
+
+Platform PC/SC libraries and drivers remain subject to their own licenses.

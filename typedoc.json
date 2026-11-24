@@ -1,0 +1,24 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts", "src/low-level/index.ts"],
+  "tsconfig": "tsconfig.build.json",
+  "out": "docs",
+  "name": "@node-ctypes/smartcard",
+  "readme": "README.md",
+  "includeVersion": true,
+  "sort": ["source-order"],
+  "projectDocuments": ["guides/README.md", "examples/README.md"],
+  "navigationLinks": {
+    "GitHub": "https://github.com/dmazzella/node-smartcard",
+    "npm": "https://www.npmjs.com/package/@node-ctypes/smartcard"
+  },
+  "exclude": ["**/node_modules/**", "**/tests/**", "**/examples/**"],
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "highlightLanguages": ["typescript", "javascript", "bash", "powershell", "json"]
+}

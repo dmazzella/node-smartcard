@@ -1,0 +1,76 @@
+{
+  "name": "@node-ctypes/smartcard",
+  "version": "0.1.0",
+  "description": "Typed portable PC/SC bindings and asynchronous smart card API powered by node-ctypes",
+  "author": "Damiano Mazzella",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmazzella/node-smartcard.git"
+  },
+  "homepage": "https://github.com/dmazzella/node-smartcard#readme",
+  "bugs": {
+    "url": "https://github.com/dmazzella/node-smartcard/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./low-level": {
+      "types": "./dist/low-level/index.d.ts",
+      "import": "./dist/low-level/index.js"
+    },
+    "./scard": {
+      "types": "./dist/scard.d.ts",
+      "import": "./dist/scard.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "keywords": [
+    "pcsc",
+    "smartcard",
+    "winscard",
+    "pcsclite",
+    "ffi",
+    "node-ctypes"
+  ],
+  "scripts": {
+    "clean": "node scripts/clean.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "test:types": "tsc -p tests/tsconfig.json && tsc -p tests/types/tsconfig.json",
+    "test": "npm run build && npm run test:types && node --test --test-concurrency=1 \"tests/src/*.test.ts\"",
+    "test:unit": "npm run build && node --test \"tests/checks/unit.*.test.ts\"",
+    "test:checks": "npm run build && npm run test:types && node --test --test-concurrency=1 \"tests/checks/*.test.ts\"",
+    "test:checks:mirrored": "npm run build && npm run test:types && node scripts/test-mirrored.ts \"tests/checks/*.test.ts\"",
+    "test:transactions": "npm run build && npm run test:types && node --test --test-concurrency=1 tests/hardware/transactions.test.ts",
+    "test:mirrored": "npm run build && npm run test:types && node scripts/test-mirrored.ts",
+    "docs": "typedoc",
+    "docs:serve": "typedoc && npx serve docs",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "dependencies": {
+    "node-ctypes": "^2.15.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typedoc": "^0.28.20",
+    "typescript": "~6.0.3"
+  }
+}

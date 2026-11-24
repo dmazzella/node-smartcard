@@ -1,0 +1,59 @@
+name: node-smartcard
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, windows-11-arm, macos-latest]
+        node: ["24", "26"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install PC/SC library (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libpcsclite1
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: npm run test:types
+      - run: npm run test:unit
+      - run: node --test tests/checks/low-level.test.ts
+      - run: node scripts/test-mirrored.ts "tests/checks/unit.*.test.ts" tests/checks/low-level.test.ts
+      - run: npm pack --dry-run
+
+  publish:
+    needs: package
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing (OIDC), no token secret
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install -g npm@^11.5.1 # Trusted Publishing requires npm 11.5.1+
+      - name: Validate release tag
+        run: test "refs/tags/v$(node -p "require('./package.json').version")" = "$GITHUB_REF"
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      # Hardware tests require a real smart card reader: skip prepublishOnly.
+      - name: Publish
+        run: |
+          tag=latest
+          case "$(node -p "require('./package.json').version")" in *-*) tag=next ;; esac
+          npm publish --access public --provenance --ignore-scripts --tag "$tag"
